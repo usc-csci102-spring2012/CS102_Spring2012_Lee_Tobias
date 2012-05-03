@@ -1,0 +1,52 @@
+Purpose:
+	This is a recreation of the first actual dungeon in The Legend of Zelda: Oracle of Ages, Maku Road. The goal is to get through the dungeon, solving puzzles and avoiding traps and monsters along the way. The formatting of this code allows for a theoretical infinite amount of dungeons to be created and all different cool types of abilities for Link, blocks, and enemies. Unfortunately, due to time constraints and budget issues, this release had to be cut short at one dungeon. If you are interested in more levels for this game, please donate to gofigure746@gmail.com using Paypal :D
+
+Requirements:
+	The goal of this project was to create a game using the limited capabilities of Qt, C++, a timespan of ~1 week, and an SSH connection to a server that limits the strain clients are allowed to place on the server. Moreover, the game needed a multitude of "things" that don't really fit into most normal games that would be viable with the limited resources available. In any case, the overall purpose of this project was to take what could be a fun game, and bloat it with as much as possible, a respectable business practice that has taken ahold of much of the mobile games market (see: Angry Birds, etc.)
+
+Classes:
+	A lot. Anything that is drawn, and a lot of things that are not, is its own separate class. Most everything visible extends from a base LoZObject class:
+	LoZObject: - The parent of all the children below. Helps when everything drawn and placable on a room is derived from the same class.
+		Block - An average block. Some are movable, but only once. 
+		Door - A door. Can be opened or closed. Closed ones can open either by event, or by a key. Open ones take you to new rooms.
+		Enemy - The general form of an enemy. All are currently killed in one hit, but that can be changed if requested.
+			Due to the limitations of IDs only being 1 character, all 3 different types of enemies are housed in this one class with a "type" variable to differentiate them.
+		Ground - I know it seems stupid to leave the ground as a class, but the ability to go data[m][n]->getID() without having to check if it's NULL is great. Ground also has a couple more properties that couldn't quite make it into play in this dungeon, but are evident when Link gets a shovel.
+		Heart - A Heart Piece. Increases your life by half a heart. Because the outside world is removed from this game, each Heart Piece has its value doubled and the effects are visible immediately.
+		Hole - A hole. If Link falls into one of these, he takes damage and returns to the start of the current room. More than just Link can fall into these, like Blocks.
+		Key - The key to open a locked door. If there were more locked doors, the presence of keys would be converted to ints, rather than a bool, but for now it's just "If you have it, it opens the door, and it won't break because no one's stupid enough to break a key when opening a door."
+		Link - The Protagonists. A lot happens with him that makes it kinda hard to describe him. He controls the sword, the status bar, and is the thing that is controlled by the player. Those are the main things, really.
+		Shot - Due to problems with Qt, there is only a single shot attached to a room, rather than a shot attached to the enemy that actually fires them. It goes towards where Link was standing when it was fired and if it hits him, he takes damage. Otherwise, it goes off the screen waiting to be repositioned and fired again.
+		Switch - Switches do a lot of things. They can open doors, they can make keys fall, and they have the methods to control their identity and current switched status.
+		Sword - Kills enemies. Important because this is also an aspect controlled by the player. Also, the implementation of the sword can be mimiced to create more items for Link to wield. But really, they're just attached to Link.
+		Torch - Purely decorative. Different from Blocks because you shouldn't try to push them. Later, they could be lit, but for now they just act as obstacles.
+		Wall - This was gonna look cool until I learned that Qt couldn't really handle creating QImages for all the Walls I would need so now they're squares. Like Torches, you shouldn't try to push them because they're not Blocks. Unlike Torches, they look incredibly stupid if placed in the middle of the floor.
+		Warp - A little feature because the outside world was taken out. Like a door, it moves you to another room, but unlike a door, it can't close and it's visible.
+	Each with an ID, a constructor, and a draw method.
+	
+	Room:
+		Where all the magic happens. This class controls all the objects (LoZObject*s) in a room. Also where the Enemy AI is stored.
+	And the window to hold and draw everything and manage time and all that jazz.
+
+Global Anything:
+	Not this time, because everything is stored in a Header file.
+
+UI:
+	I'm not sure how much GUIer this could get. Anyways, you control Link with the Arrow Keys and press 'Z' to use the sword. You try to solve the puzzles to get to the end of the dungeon, while avoiding traps and killing enemies. That's pretty much all there is to it.
+
+Test Cases:
+	Lots of compiling and running and learning that Qt bugs up easily. Also, any unintended features are intended to be unintended, and are therefore intended. Try to find some cool glitches, and if they become widespread enough, they can be used for more cool puzzles!
+
+Documentation:
+	LoZObject:
+		Holds a constructor and a draw function.
+		Every child of those holds them too.
+		Most things have getters and setters for their own unique variables.
+		Nothing too big happens in these classes, as everything goes on in room.h and loz.h
+	Room:
+		Where everything happens. There's a lot in here, so I'll just say that every bit of movement that is not Link or his sword is managed in here. The function names are pretty intuitive.
+	LoZ:
+		Where the rest of everything happens. Controls the drawing and timing and keyboard input for everything, as well as links Link to the Rooms.
+
+
+One more thing: This code may have a lot of redundant or unused parts and some messy comment blocks. These are left because I don't want Qt to spaz out again and break everything again.
